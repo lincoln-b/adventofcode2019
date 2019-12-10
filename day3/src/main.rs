@@ -33,9 +33,9 @@ fn lines_from_file(filename: String) -> Result<Vec<String>, io::Error> {
     Ok(lines)
 }
 
-fn instructions_from_line(line: &String) -> Vec<Instruction> {
+fn instructions_from_line(line: &str) -> Vec<Instruction> {
     let mut vec = Vec::new();
-    for item in line.split(",") {
+    for item in line.split(',') {
         let d = match item.as_bytes()[0] as char {
             'U' => Direction::Up,
             'D' => Direction::Down,
@@ -52,7 +52,7 @@ fn instructions_from_line(line: &String) -> Vec<Instruction> {
     vec
 }
 
-fn coordinates_from_instructions(instructions: &Vec<Instruction>) -> Vec<Coordinate> {
+fn coordinates_from_instructions(instructions: &[Instruction]) -> Vec<Coordinate> {
     let mut vec = Vec::new();
     let mut x = 0;
     let mut y = 0;
@@ -103,8 +103,8 @@ fn find_intersection(
 }
 
 fn find_collisions(
-    coordinates1: &Vec<Coordinate>,
-    coordinates2: &Vec<Coordinate>,
+    coordinates1: &[Coordinate],
+    coordinates2: &[Coordinate],
 ) -> Vec<Coordinate> {
     let mut vec = Vec::new();
     for c1 in 1..coordinates1.len() {
@@ -115,16 +115,15 @@ fn find_collisions(
                 &coordinates2[c2],
                 &coordinates2[c2 - 1],
             );
-            match intersection {
-                Ok(v) => vec.push(v),
-                Err(_) => (),
-            };
+            if let Ok(v) = intersection {
+                vec.push(v);
+            }
         }
     }
     vec
 }
 
-fn find_closest_collision(collisions: &Vec<Coordinate>) -> i32 {
+fn find_closest_collision(collisions: &[Coordinate]) -> i32 {
     let mut min: i32 = -1;
     for collision in collisions {
         let dist = collision.x.abs() + collision.y.abs();
@@ -135,7 +134,7 @@ fn find_closest_collision(collisions: &Vec<Coordinate>) -> i32 {
     min
 }
 
-fn find_first_collision(coordinates1: &Vec<Coordinate>, coordinates2: &Vec<Coordinate>) -> i32 {
+fn find_first_collision(coordinates1: &[Coordinate], coordinates2: &[Coordinate]) -> i32 {
     let mut steps_c1 = 0;
     let mut steps_c2;
     for c1 in 1..coordinates1.len() {
@@ -151,18 +150,15 @@ fn find_first_collision(coordinates1: &Vec<Coordinate>, coordinates2: &Vec<Coord
                 &coordinates2[c2],
                 &coordinates2[c2 - 1],
             );
-            match intersection {
-                Ok(v) => {
-                    if v.x != 0 || v.y != 0 {
-                        steps_c1 -=
-                            (v.x - coordinates1[c1].x).abs() + (v.y - coordinates1[c1].y).abs();
-                        steps_c2 -=
-                            (v.x - coordinates2[c2].x).abs() + (v.y - coordinates2[c2].y).abs();
-                        return steps_c1 + steps_c2;
-                    }
+            if let Ok(v) = intersection {
+                if v.x != 0 || v.y != 0 {
+                    steps_c1 -=
+                        (v.x - coordinates1[c1].x).abs() + (v.y - coordinates1[c1].y).abs();
+                    steps_c2 -=
+                        (v.x - coordinates2[c2].x).abs() + (v.y - coordinates2[c2].y).abs();
+                    return steps_c1 + steps_c2;
                 }
-                Err(_) => (),
-            };
+            }
         }
     }
     0

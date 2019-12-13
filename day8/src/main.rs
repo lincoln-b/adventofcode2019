@@ -1,30 +1,22 @@
 use std::fs;
 
 fn main() {
-    
     let layers = load_image("data.txt");
 
     // part 1
 
-    let mut min_index = 0;
-    let mut min_value = 10000;
-    for (i, layer) in layers.iter().enumerate() {
-        let val = layer.iter().filter(|x| { **x == '0' }).count();
-        if val < min_value {
-            min_value = val;
-            min_index = i;
-        }
-    }
-
-    let num1 = layers[min_index].iter().filter(|x| { **x == '1' }).count();
-    let num2 = layers[min_index].iter().filter(|x| { **x == '2' }).count();
+    let layer = layers
+        .iter()
+        .min_by_key(|layer| layer.iter().filter(|x| **x == '0').count())
+        .unwrap();
+    let num1 = layer.iter().filter(|x| **x == '1').count();
+    let num2 = layer.iter().filter(|x| **x == '2').count();
     println!("{}", num1 * num2);
 
     // part 2
-    
+
     let layer = combine_layers(&layers);
     print_layer(&layer);
-
 }
 
 fn combine_layers(layers: &Vec<Vec<char>>) -> Vec<char> {
@@ -61,7 +53,7 @@ fn load_image(filename: &str) -> Vec<Vec<char>> {
 
     for c in data.chars() {
         layer.push(c);
-        i = if i == 149 { 
+        i = if i == 149 {
             layers.push(layer);
             layer = Vec::new();
             0

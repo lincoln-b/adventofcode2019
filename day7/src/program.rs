@@ -66,8 +66,7 @@ impl IntCode {
         }
     }
 
-    pub fn run(&mut self, input: &[i32]) -> Option<i32> {
-        let mut input = input.iter();
+    pub fn run<'a, I: Iterator<Item=&'a i32>>(&mut self, mut input: I) -> Option<i32> {
         while self.counter < self.memory.len() {
             match Instruction::parse(self.memory[self.counter]) {
                 Instruction::Add(a, b) => {

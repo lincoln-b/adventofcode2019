@@ -40,11 +40,11 @@ fn loop_program_with_settings(settings: &Vec<i32>) -> i32 {
         IntCode::new(&input::ORIGINAL),
     ];
     for (i, phase) in settings.iter().enumerate() {
-        last_out = computers[i].run(&[*phase,last_out]).unwrap();
+        last_out = computers[i].run([*phase,last_out].iter()).unwrap();
     }
     let mut i = 0;
     loop {
-        last_out = match computers[i].run(&[last_out]) {
+        last_out = match computers[i].run([last_out].iter()) {
             Some(v) => v,
             None => {
                 return last_out;
@@ -57,7 +57,7 @@ fn loop_program_with_settings(settings: &Vec<i32>) -> i32 {
 fn run_program_with_settings(settings: &Vec<i32>) -> i32 {
     let mut last_out = 0;
     for phase in settings {
-        last_out = IntCode::new(&input::ORIGINAL).run(&[*phase,last_out]).unwrap();
+        last_out = IntCode::new(&input::ORIGINAL).run([*phase,last_out].iter()).unwrap();
     }
     last_out
 }
